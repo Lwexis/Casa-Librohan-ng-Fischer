@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mga panitikan mula sa Kalaliman ng Fischer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom, #b3e5fc, #e1f5fe);
+      margin: 0;
+      padding: 0;
+      color: #03455c;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem;
+      background: #81d4fa;
+      color: #03455c;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+
+    header p {
+      margin: 0.5rem 0 0;
+    }
+
+    main {
+      padding: 2rem;
+    }
+
+    .controls {
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .controls input, .controls select, .controls button {
+      padding: 0.6rem 1rem;
+      border-radius: 20px;
+      border: none;
+      font-size: 1rem;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .controls button:hover, .controls select:hover, .controls input:hover {
+      transform: scale(1.05);
+      background: #4fc3f7;
+      color: white;
+      cursor: pointer;
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .book-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .book-card:hover {
+      transform: scale(1.03);
+    }
+
+    .book-card h3 {
+      margin: 0 0 0.5rem;
+    }
+
+    .book-card p {
+      margin: 0.25rem 0;
+    }
+
+    .book-actions {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .book-actions button {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 20px;
+      background: #81d4fa;
+      color: #03455c;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .book-actions button:hover {
+      transform: scale(1.1);
+      background: #4fc3f7;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #ef5350;
+      color: white;
+    }
+    .delete-btn:hover {
+      background: #e53935;
+    }
+
+    .reading-list {
+      margin-top: 3rem;
+      padding: 1rem;
+      background: #e0f7fa;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .reading-list h2 {
+      margin-top: 0;
+    }
+
+    .reading-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .reading-item select {
+      border: none;
+      border-radius: 12px;
+      padding: 0.3rem;
+      background: #81d4fa;
+      color: #03455c;
+      transition: transform 0.2s ease;
+    }
+
+    .reading-item select:hover {
+      transform: scale(1.05);
+      background: #4fc3f7;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mga panitikan mula sa Kalaliman ng Fischer</h1>
+    <p>something tagline</p>
+  </header>
+  <main>
+    <div class="controls">
+      <input id="title" placeholder="Book Title" />
+      <input id="author" placeholder="Author" />
+      <input id="category" placeholder="Category" />
+      <textarea id="synopsis" placeholder="Synopsis"></textarea>
+      <textarea id="moral" placeholder="Moral"></textarea>
+      <button onclick="addBook()">Add Book</button>
+    </div>
+
+    <div class="book-grid" id="bookGrid"></div>
+
+    <div class="reading-list">
+      <h2>My Reading List</h2>
+      <div id="readingList"></div>
+    </div>
+  </main>
+
+  <script>
+    let books = [
+      {title: 'Sample Book', author: 'John Doe', category: 'Fiction', synopsis: 'A thrilling sample.', moral: 'Bravery matters.'},
+      {title: 'Ocean Tales', author: 'Jane Blue', category: 'Adventure', synopsis: 'Stories from the sea.', moral: 'Respect nature.'}
+    ];
+    let readingList = [];
+
+    function renderBooks() {
+      const grid = document.getElementById('bookGrid');
+      grid.innerHTML = '';
+      books.forEach((book, index) => {
+        const card = document.createElement('div');
+        card.className = 'book-card';
+        card.innerHTML = `
+          <h3>${book.title}</h3>
+          <p><strong>Author:</strong> ${book.author}</p>
+          <p><strong>Category:</strong> ${book.category}</p>
+          <p>${book.synopsis}</p>
+          <p><em>${book.moral}</em></p>
+          <div class="book-actions">
+            <button onclick="addToReadingList(${index})">Add to List</button>
+            <button class="delete-btn" onclick="deleteBook(${index})">Delete</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderReadingList() {
+      const list = document.getElementById('readingList');
+      list.innerHTML = '';
+      readingList.forEach((book, idx) => {
+        const item = document.createElement('div');
+        item.className = 'reading-item';
+        item.innerHTML = `
+          <span>${book.title}</span>
+          <select onchange="updateStatus(${idx}, this.value)">
+            <option ${book.status==='To Be Read'?'selected':''}>To Be Read</option>
+            <option ${book.status==='Reading'?'selected':''}>Reading</option>
+            <option ${book.status==='Finished'?'selected':''}>Finished</option>
+            <option ${book.status==='Dropped'?'selected':''}>Dropped</option>
+            <option ${book.status==='On Hiatus'?'selected':''}>On Hiatus</option>
+          </select>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function addBook() {
+      const title = document.getElementById('title').value;
+      const author = document.getElementById('author').value;
+      const category = document.getElementById('category').value;
+      const synopsis = document.getElementById('synopsis').value;
+      const moral = document.getElementById('moral').value;
+      if (!title) return;
+      books.push({title, author, category, synopsis, moral});
+      renderBooks();
+      document.getElementById('title').value = '';
+      document.getElementById('author').value = '';
+      document.getElementById('category').value = '';
+      document.getElementById('synopsis').value = '';
+      document.getElementById('moral').value = '';
+    }
+
+    function deleteBook(index) {
+      books.splice(index, 1);
+      renderBooks();
+    }
+
+    function addToReadingList(index) {
+      const book = {...books[index], status: 'To Be Read'};
+      readingList.push(book);
+      renderReadingList();
+    }
+
+    function updateStatus(idx, value) {
+      readingList[idx].status = value;
+    }
+
+    renderBooks();
+    renderReadingList();
+  </script>
+</body>
+</html>
